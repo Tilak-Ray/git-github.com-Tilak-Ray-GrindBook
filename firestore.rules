@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() { return request.auth != null; }
+    function isEmailVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // --- Entity Validations ---
+    // These helpers validate the SHAPE of the data. 
+    // They are design to be safe for both create and update.
+    
+    function isValidUser(data) {
+      return data.get('uid', request.auth.uid) == request.auth.uid &&
+             (data.get('displayName', 'Valid') is string && data.get('displayName', 'Valid').size() <= 100) &&
+             (data.get('bio', 'Valid') is string && data.get('bio', 'Valid').size() <= 1000);
+    }
+
+    function isValidTask(data) {
+      return data.get('userId', request.auth.uid) == request.auth.uid &&
+             (data.get('title', 'Valid') is string && data.get('title', 'Valid').size() <= 500) &&
+             (data.get('completed', false) is bool);
+    }
+
+    function isValidRoadmap(data) {
+      return data.get('userId', request.auth.uid) == request.auth.uid &&
+             (data.get('title', 'Valid') is string && data.get('title', 'Valid').size() <= 500) &&
+             (data.get('progress', 0) is int && data.get('progress', 0) >= 0 && data.get('progress', 0) <= 100) &&
+             (data.get('modules', []) is list && data.get('modules', []).size() <= 50);
+    }
+
+    function isValidPost(data) {
+      return data.get('authorId', request.auth.uid) == request.auth.uid &&
+             (data.get('content', 'Valid') is string && data.get('content', 'Valid').size() <= 5000);
+    }
+
+    // --- Collection Matches ---
+    
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create: if isOwner(userId) && isValidUser(incoming()) && 
+                    incoming().keys().hasAll(['uid', 'displayName']);
+      allow update: if isOwner(userId) && isValidUser(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'bio', 'location', 'website', 'stats', 'mindset', 'updatedAt']);
+    }
+
+    match /users/{userId}/tasks/{taskId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidTask(incoming());
+      allow update: if isOwner(userId) && isValidTask(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['title', 'completed', 'priority', 'dueDate', 'updatedAt']);
+      allow delete: if isOwner(userId);
+    }
+
+    match /users/{userId}/roadmaps/{roadmapId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidRoadmap(incoming());
+      allow update: if isOwner(userId) && isValidRoadmap(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['modules', 'progress', 'updatedAt']);
+      allow delete: if isOwner(userId);
+    }
+
+    match /posts/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidPost(incoming()) &&
+                    incoming().keys().hasAll(['authorId', 'content', 'createdAt']);
+      allow update: if isSignedIn() && (existing().authorId == request.auth.uid) && 
+                    isValidPost(incoming()) &&
+                    incoming().diff(existing()).affectedKeys().hasOnly(['content', 'imageUrl', 'likesCount', 'commentsCount', 'updatedAt']);
+      allow delete: if isSignedIn() && existing().authorId == request.auth.uid;
+    }
+
+    match /friendships/{friendshipId} {
+      allow read: if isSignedIn() && (request.auth.uid in resource.data.users);
+      allow create: if isSignedIn() && (request.auth.uid in incoming().users) && isValidId(friendshipId);
+      allow update: if isSignedIn() && (request.auth.uid in existing().users) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+    }
+  }
+}

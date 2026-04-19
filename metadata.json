@@ -1,0 +1,8 @@
+{
+  "name": "GrindBook",
+  "description": "A productivity-focused social media platform where users can track habits, complete tasks, and grind together with a community. Features include gamified progress, AI buddy, roadmap guides, and deep focus tools.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
