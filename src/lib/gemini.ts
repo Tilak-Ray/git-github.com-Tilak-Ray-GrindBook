@@ -1,26 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 
-let aiInstance: GoogleGenAI | null = null;
-
-function getAIInstance() {
-  if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.warn("GEMINI_API_KEY is missing. AI functionality will be limited.");
-      return null;
-    }
-    aiInstance = new GoogleGenAI({ apiKey });
-  }
-  return aiInstance;
-}
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
 export async function getAIBuddyResponse(userStats: any, message: string, history: any[] = []) {
   try {
-    const ai = getAIInstance();
-    if (!ai) {
-      return "I'm currently disconnected from my neural network. Please configure the GEMINI_API_KEY to activate me.";
-    }
-
     const chat = ai.chats.create({
       model: "gemini-3.1-flash-lite-preview",
       config: {
