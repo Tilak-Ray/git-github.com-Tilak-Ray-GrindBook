@@ -66,13 +66,15 @@ function App() {
 
       if (mode && oobCode) {
         try {
-          if (mode === 'verifyEmail' || mode === 'verifyAndChangeEmail') {
+          // Broaden detection to handle custom 'action' mode or standard 'verifyEmail'
+          if (mode === 'verifyEmail' || mode === 'verifyAndChangeEmail' || mode === 'action') {
             await applyActionCode(auth, oobCode);
             toast.success('SIGNATURE_VERIFIED', {
               description: 'Your biological credentials have been authenticated. Neural link secured.',
             });
-            // Clean URL
-            window.history.replaceState({}, document.title, window.location.pathname);
+            // Clean URL from parameters
+            const cleanUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanUrl);
           } else if (mode === 'resetPassword') {
             toast.info('DECRYPTION_INITIATED', {
               description: 'Passcode reset procedure detected. Follow console instructions.',
