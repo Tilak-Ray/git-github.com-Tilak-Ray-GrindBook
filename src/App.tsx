@@ -11,7 +11,7 @@ import { GrindBot } from './components/GrindBot';
 import { Roadmaps } from './components/Roadmaps';
 import { Profile } from './components/Profile';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { logger } from './lib/logger';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -475,7 +475,7 @@ function App() {
           )}
         </AnimatePresence>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-12 custom-scrollbar relative z-10 scroll-smooth">
+        <div className={`flex-1 ${view === 'buddy' ? 'overflow-hidden' : 'overflow-y-auto'} p-4 md:p-12 custom-scrollbar relative z-10 scroll-smooth`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={view}

@@ -123,7 +123,7 @@ export const GrindBot: React.FC<GrindBotProps> = ({ user }) => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-112px)] md:h-[calc(100vh-100px)] relative bg-transparent overflow-hidden -m-4 md:-m-12">
+    <div className="flex flex-col h-full relative bg-transparent overflow-hidden -m-4 md:-m-12">
       <div 
         ref={scrollRef}
         className="flex-1 overflow-y-auto custom-scrollbar px-4 md:px-6 pb-48 pt-4 md:pt-12 space-y-6 md:space-y-12"
@@ -215,16 +215,16 @@ export const GrindBot: React.FC<GrindBotProps> = ({ user }) => {
       </div>
 
       {/* Re-engineered Bottom Input Area with Solid Masking Shield */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[var(--tech-bg)] via-[var(--tech-bg)]/80 to-transparent pt-16 pb-4 px-8 pointer-events-none">
-        <div className="max-w-4xl mx-auto flex items-end space-x-3 pointer-events-auto">
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[var(--tech-bg)] via-[var(--tech-bg)]/80 to-transparent pt-12 pb-4 px-4 md:px-8 pointer-events-none">
+        <div className="max-w-4xl mx-auto flex items-end space-x-2 md:space-x-3 pointer-events-auto">
           <form onSubmit={handleSend} className="flex-1 group">
             <div className="relative tech-indent bg-black border border-[var(--tech-border)] shadow-2xl overflow-hidden rounded-sm">
               <input 
                 type="text" 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="CONVERSE_WITH_ARCHITECTURE..."
-                className="w-full bg-transparent border-none py-5 px-8 text-[12px] font-bold uppercase tracking-[0.2em] text-[var(--tech-accent)] placeholder:text-[var(--tech-text-dim)]/20 outline-none transition-all"
+                placeholder="STATE_INTENT..."
+                className="w-full bg-transparent border-none py-3 md:py-5 px-4 md:px-8 text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] text-[var(--tech-accent)] placeholder:text-[var(--tech-text-dim)]/20 outline-none transition-all"
               />
               <div className="absolute bottom-0 left-0 w-[2px] h-full bg-[var(--tech-accent)]/20 group-focus-within:bg-[var(--tech-accent)] transition-colors"></div>
             </div>
@@ -234,9 +234,9 @@ export const GrindBot: React.FC<GrindBotProps> = ({ user }) => {
             type="submit"
             onClick={handleSend}
             disabled={isLoading || !input.trim()}
-            className={`tech-btn w-16 h-[64px] flex items-center justify-center rounded-sm transition-all border border-[var(--tech-border)] bg-[var(--tech-inner)] shadow-lg ${!input.trim() || isLoading ? 'opacity-20 cursor-not-allowed' : 'hover:border-[var(--tech-accent)] hover:shadow-[0_0_15px_var(--tech-glow)]'}`}
+            className={`tech-btn w-12 md:w-16 h-[46px] md:h-[64px] flex items-center justify-center rounded-sm transition-all border border-[var(--tech-border)] bg-[var(--tech-inner)] shadow-lg ${!input.trim() || isLoading ? 'opacity-20 cursor-not-allowed' : 'hover:border-[var(--tech-accent)] hover:shadow-[0_0_15px_var(--tech-glow)]'}`}
           >
-            <Send size={20} className={isLoading || !input.trim() ? "text-[var(--tech-text-dim)]" : "text-[var(--tech-accent)]"} />
+            <Send size={18} className={isLoading || !input.trim() ? "text-[var(--tech-text-dim)]" : "text-[var(--tech-accent)]"} />
           </button>
         </div>
       </div>

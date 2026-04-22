@@ -57,7 +57,7 @@ export const SignalFeed: React.FC = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-120px)] w-full flex justify-center bg-black overflow-hidden relative">
+    <div className="h-full w-full flex justify-center bg-black overflow-hidden relative">
       <div 
         ref={containerRef}
         onScroll={handleScroll}
